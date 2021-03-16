@@ -12,7 +12,7 @@
 类强烈讲义父类和子类使用相同的方法名表示特定的行为，从而让子类重写父类。
 
 ## JavaScript中的“类”
-相当长一段时间里，JavaScript只是有一些近似类的与法院诉（比如new和instanceof），不过后来es6新增了一个class关键字。但这也不意味着JavaScript中实际有类。  
+相当长一段时间里，JavaScript只是有一些近似类的语法元素（比如new和instanceof），不过后来es6新增了一个class关键字。但这也不意味着JavaScript中实际有类。  
 由于类是一种设计模式，所以可以使用一些方法近似实现类的功能。JavaScript提供了一些近似类的语法。在近似的表象之下，JavaScript的机制其实和类完全不同。
 
 ## 类的机制
