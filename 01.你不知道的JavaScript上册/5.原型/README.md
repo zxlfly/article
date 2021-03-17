@@ -135,7 +135,7 @@ Object.defineProperty(Foo.prototype,"constructor",{
     value:foo//让.constructor指向Foo
 })
 ```
-**实际上，对象的.constructor属性默认指向一个函数么这个函数也有一个叫做.prototype的引用指向这个对象。‘构造函数’和‘原型’这两个词默认只有松散的含义，实际的值可能适用也可能不适用。最好的办法是记住“constructor并不表示（对象）被(它)构造”。**  
+**实际上，对象的.constructor属性默认指向一个函数,这个函数也有一个叫做.prototype的引用指向这个对象。‘构造函数’和‘原型’这两个词默认只有松散的含义，实际的值可能适用也可能不适用。最好的办法是记住“constructor并不表示（对象）被(它)构造”。**  
 .constructor并不是一个不可变属性。它是不可枚举的，但是它的值是可写的。此外，可以给任意的原型链中的任意对象添加一个名为constructor的属性或者对其进行修改，任意赋值。  
 ## 继承（原型）
 ```
