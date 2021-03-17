@@ -169,7 +169,7 @@ ES6新增了辅助函数``Object.setPrototypeOf``来修改关联。
 //es6之前需要抛弃默认的Bar.prototype
 Bar.prototype=Object.create(Foo.prototype)
 //es6可以直接修改
-Object.setPrototypeOf(Bar.prototype.Foo.prototype)
+Object.setPrototypeOf(Bar.prototype,Foo.prototype)
 ```
 如果忽略掉Object.create带来的轻微性能损失（抛弃的对象需要进行垃圾回收），它实际上比es6的方法更短可读性更高。
 ### 检查类关系
