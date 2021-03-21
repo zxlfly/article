@@ -56,7 +56,7 @@ JavaScript和面向类的语言不同，它并没有类来作为对象的抽象�
 function Foo(){}
 Foo.prototype
 ```
-所有函数默认都会拥有一个名为``prototype``的共有且不可枚举的属性，它会指向一个对象。  
+**所有函数默认都会拥有一个名为``prototype``的共有且不可枚举的属性，它会指向一个对象。**  
 这个对象通常被称为Foo的原型，因为我们通过名为Foo.prototype的属性引用来访问它。  
 ```
 function Foo(){}
@@ -115,7 +115,7 @@ b.myName()//b
 Foo.prototype.myName=...这段代码会给Foo.prototype对象添加一个属性，创建对象的过程中新对象内部的[[prototype]]都会关联到Foo.prototype上。当a和b中无法找到myName时，就会通过委托的方式在Foo.prototype上找到。  
 **前面说a.constructor===Foo为真，意味着a确实有一个指向Foo的.constructor属性，但事实不是这样的。**  
 **a.constructor只是通过默认的[[prototype]]委托指向Foo，这和构造毫无关系。**  
-举例来说，Foo.prototype的.constructor属性只是Foo函数在声明时的默认属性。如果我们创建一个新的对象并替换了函数默认的.prototype对象引用，那么新对象并不会自动获得.constructor属性。
+举例来说，Foo.prototype的.constructor属性只是Foo函数在声明时的默认属性。**如果我们创建一个新的对象并替换了函数默认的.prototype对象引用，那么新对象并不会自动获得.constructor属性。**
 ```
 function Foo(){}
 Foo.prototype={}
@@ -152,6 +152,8 @@ function Bar(name,label){
 //创建一个新的Bar.prototype对象并关联到Foo.prototype
 Bar.prototype=Object.create(Foo.prototype)
 // 注意，现在没有Bar.prototype.constructor了
+// 原来的prototype被抛弃了，新的不会自动赋值
+// 如果打印的话会是原型链上面的不会是Bar
 // 如果需要的话，那就得手动修复
 Bar.prototype.myLabel=function(){
     return this.label
@@ -164,7 +166,21 @@ a.myLabel()//'obj a'
 如果直接使用``Bar.prototype=Foo.prototype``只是替换了引用，操作的时候容易修改``Foo.prototype``对象本身。  
 如果使用``Bar.prototype=new Foo()``会创建一个关联到``Foo.prototype``的新对象。但是它使用了Foo的**构造函数调用**，如果函数Foo有一些副作用就会影响Bar()的后代。  
 在es6之前有一个方法来修改对象原型链的关联，但是这个方法并不是标准无法兼容所有浏览器``__proto__``。  
-ES6新增了辅助函数``Object.setPrototypeOf``来修改关联。
+ES6新增了辅助函数``Object.setPrototypeOf``来修改关联。  
+**``__proto__``属性引用了内部的[[prototype]]对象。**  
+它看起来就像一个属性，但是实际上更像是一个getter/setter。
+```
+//大致实现
+Object.defineProperty(Object.prototype,"__proto__",{
+    get:function(){
+        return Object.getPrototypeOf(this)
+    },
+    set:function(v){
+        Object.setPrototypeOf(this,v)
+        return v
+    }
+})
+```
 ```
 //es6之前需要抛弃默认的Bar.prototype
 Bar.prototype=Object.create(Foo.prototype)
@@ -203,7 +219,8 @@ Object.create会创建一个拥有空原型链的对象，这个对象无法进�
 如果要访问对象中不存在的一个属性，[[Get]]操作就会查找对象内部的[[prototype]]关联对象。这个关联关系实际上定义了一条原型链，在查找属性时会对它进行遍历。  
 所有的普通对象都有内置的Object.prototype，指向原型链的顶端。  
 使用new调用函数时会把新对象的prototype属性关联到其他对象。带new的函数调用通常被称为‘构造函数调用’，尽管和传统面向类语言的类构造函数不一样。  
-虽然这些JavaScript中的机制和传统面向类语言中的‘类初始化’和‘类继承’很相似，但是JavaScript中的机制有一个核心区别，那就是不会进行复制，对象之间是通过内部的原型链关联的。
+虽然这些JavaScript中的机制和传统面向类语言中的‘类初始化’和‘类继承’很相似，但是JavaScript中的机制有一个核心区别，那就是不会进行复制，对象之间是通过内部的原型链关联的。  
+__proto__和constructor属性是对象所独有的，prototype属性是函数所独有的。（函数本身也是对象）
 
 # 行为委托
 ## 类理论
@@ -213,3 +230,4 @@ JavaScript中原型链机制会把对象关联到其他对象。委托的行为�
 ### 相互委托（禁止）
 
 **行为委托认为对象之间是兄弟关系，互相委托，而不是父类和子类的关系。JavaScript的原型机制本质上就是行为委托机制。也就是说，我们可以选择在JavaScript中努力实现累计值，也可以拥抱更自然的原型委托机制。**
+
