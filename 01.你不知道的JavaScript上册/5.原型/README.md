@@ -7,7 +7,7 @@ var obj ={
 }
 obj.a//2
 ```
-对于默认的[[Get]]操作来说，第一步时间差对象本身是否有这个属性，如果有就使用它。如果没有就需要使用对象的[[prototype]]链了。  
+对于默认的[[Get]]操作来说，第一步是在对象本身查找是否有这个属性，如果有就使用它。如果没有就需要使用对象的[[prototype]]链了。  
 ```
 var another = {
     a:2
@@ -23,7 +23,7 @@ obj.a//2
 ```
 obj.foo="666"
 ```
-如果obj上面有名为foo的普同数据访问属性，这条赋值语句只会修改以后的属性值。  
+如果obj上面有名为foo的普同数据访问属性，这条赋值语句只会修改已有的属性值。  
 如果没有，就回去原型链上找，遍历原型链，类似[[Get]]操作。  
 如果原型链上面找不到，foo就会被直接添加到obj上。  
 如果原型链上面有呢？  
@@ -72,7 +72,7 @@ new Foo()这个操作实际上并没有直接创建关联，只是间接的完�
 这个机制通常被称为原型继承。  
 它常常被视为动态语言版本的类继承。这个名称主要是为了应对面向类的世界中的继承的意义。  
 继承以为着复制操作，JavaScript并不会复制对象属性。相反，会在两个对象之间创建一个关联，这样一个对象就可以通过委托访问另一个对象的属性和函数。  
-委托这个术语可以更加准确的面熟JavaScript中对象的关联机制。  
+委托这个术语可以更加准确的描述JavaScript中对象的关联机制。  
 差异继承本质上也是通过委托获取通用的属性。
 ### 构造函数
 ```
@@ -82,7 +82,7 @@ var a = new Foo()
 a.constructor=== Foo//true
 ```
 让大家觉得Foo是一个类可能就是因为new。  
-Foo.prototype默认（在第一行代码声明时）有一个共有并且不可枚举的属性.constructor，这个属性引用的是对象关联的函数（这个例子是Foo）。此外通过n构造函数调用new Foo()创建的对象也有一个.constructor属性，指向创建这个对象的函数。  
+Foo.prototype默认（在第一行代码声明时）有一个共有并且不可枚举的属性.constructor，这个属性引用的是对象关联的函数（这个例子是Foo）。此外通过构造函数调用new Foo()创建的对象也有一个.constructor属性，指向创建这个对象的函数。  
 实际上a.constructor这个属性是不存在的。它只是指向Foo函数。这也不能表示a由Foo构造。  
 实际上，Foo和程序中的其他函数没任何区别。函数本身不是构造函数，然而当在普通函数调用前面加上new关键字之后，就会把这个函数变成一个“构造函数调用”。  
 实际上，new会劫持所有普通函数并用构造对象的形式来调用它。
@@ -135,7 +135,7 @@ Object.defineProperty(Foo.prototype,"constructor",{
     value:foo//让.constructor指向Foo
 })
 ```
-**实际上，对象的.constructor属性默认指向一个函数么这个函数也有一个叫做.prototype的引用指向这个对象。‘构造函数’和‘原型’这两个词默认只有松散的含义，实际的值可能适用也可能不适用。最好的办法是记住“constructor并不表示（对象）被(它)构造”。**  
+**实际上，对象的.constructor属性默认指向一个函数,这个函数也有一个叫做.prototype的引用指向这个对象。‘构造函数’和‘原型’这两个词默认只有松散的含义，实际的值可能适用也可能不适用。最好的办法是记住“constructor并不表示（对象）被(它)构造”。**  
 .constructor并不是一个不可变属性。它是不可枚举的，但是它的值是可写的。此外，可以给任意的原型链中的任意对象添加一个名为constructor的属性或者对其进行修改，任意赋值。  
 ## 继承（原型）
 ```
@@ -185,7 +185,7 @@ Object.defineProperty(Object.prototype,"__proto__",{
 //es6之前需要抛弃默认的Bar.prototype
 Bar.prototype=Object.create(Foo.prototype)
 //es6可以直接修改
-Object.setPrototypeOf(Bar.prototype.Foo.prototype)
+Object.setPrototypeOf(Bar.prototype,Foo.prototype)
 ```
 如果忽略掉Object.create带来的轻微性能损失（抛弃的对象需要进行垃圾回收），它实际上比es6的方法更短可读性更高。
 ### 检查类关系
