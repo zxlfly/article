@@ -250,7 +250,7 @@ Object.create会创建一个拥有空原型链的对象，这个对象无法进�
 ## __proto__和constructor属性是对象所独有的，prototype属性是函数所独有的。（函数本身也是对象）
 - prototyp只是一个属性，默认指向了原型对象，言外之意他是可以修改的！！！
 - 同样的prototype的.constructor属性只是函数在声明时的默认属性，如果prototyp被修改了，那么constructor就没了，不会自动帮我们关联到新的绑定的对象上，新的对象有自己的constructor。此时一般我们需要手动修复这个问题。
-- __proto__这个属性不在标准里面，不是所有的JS引擎都支持它，它作为Object.prototype上的一个存取器属性主要用来获取或者设置某个对象的[[prototype]]
+- __proto__这个属性不在标准里面(es6之前)，不是所有的JS引擎都支持它，它作为Object.prototype上的一个存取器属性主要用来获取或者设置某个对象的[[prototype]]
   - 如果要设置可以使用Object.setPrototypeOf(操作的目标，要继承的目标)
   - 在就是上面说的prototype可以直接修改的``构造函数.prototype=source``
     - 这样修改之后，后面new的对象都会改变
