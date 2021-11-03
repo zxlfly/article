@@ -64,7 +64,7 @@ var a = new Foo()
 Object.getownPrototypeOf(a)===Foo.prototype//true
 ```
 通过new Foo()创建的每个对象将被[[Prototype]]链接到这个Foo.prototype对象。  
-在JavaScript中，并没有类似的类的复制机制。只能创建对个对象，它们的[[Prototype]]是关联的同一个对象。但是在默认情况下并不会进行复制，因此这些对象之间并不会完全失去联系，是相互关联的。  
+在JavaScript中，并没有类似的类的复制机制。只能创建多个对象，它们的[[Prototype]]是关联的同一个对象。但是在默认情况下并不会进行复制，因此这些对象之间并不会完全失去联系，是相互关联的。  
 上面的例子最后我们得到了两个对象，它们之间相互关联。并没有初始化一个类，只是让两个对象互相关联。  
 new Foo()这个操作实际上并没有直接创建关联，只是间接的完成了我们的目标：一个关联到其他对象的新对象。
 #### 关于名称
@@ -121,7 +121,7 @@ function Foo(){}
 Foo.prototype={}
 var a = new Foo()
 a.constructor===Foo//false
-a.constructor===Object//false
+a.constructor===Object//true
 ```
 这个例子a.constructor没有就会通过原型链网上找，Foo.prototype也没有，然后继续找，到了顶端Object.prototype。这个有.constructor属性，指向内置的Object(..)函数。  
 当然也可以手动的给Foo.prototype添加一个，需要加一个符合正常行为不可枚举属性。
@@ -162,7 +162,7 @@ var a =new Bar('a','obj a')
 a.myName()//'a'
 a.myLabel()//'obj a'
 ```
-上面Object.create的做法是创建了一个新对象然后把就得对象抛弃了（不能修改默认的对象），然后赋值新的对象。  
+上面Object.create的做法是创建了一个新对象然后把旧的对象抛弃了（不能修改默认的对象），然后赋值新的对象。  
 如果直接使用``Bar.prototype=Foo.prototype``只是替换了引用，操作的时候容易修改``Foo.prototype``对象本身。  
 如果使用``Bar.prototype=new Foo()``会创建一个关联到``Foo.prototype``的新对象。但是它使用了Foo的**构造函数调用**，如果函数Foo有一些副作用就会影响Bar()的后代。  
 在es6之前有一个方法来修改对象原型链的关联，但是这个方法并不是标准无法兼容所有浏览器``__proto__``。  
@@ -248,8 +248,8 @@ Object.create会创建一个拥有空原型链的对象，这个对象无法进�
       - es6之后新增了super关键字
 
 ## __proto__和constructor属性是对象所独有的，prototype属性是函数所独有的。（函数本身也是对象）
-- prototyp只是一个属性，默认指向了原型对象，言外之意他是可以修改的！！！
-- 同样的prototype的.constructor属性只是函数在声明时的默认属性，如果prototyp被修改了，那么constructor就没了，不会自动帮我们关联到新的绑定的对象上。此时一般我们需要手动修复这个问题。
+- prototype只是一个属性，默认指向了原型对象，言外之意他是可以修改的！！！
+- 同样的prototype的.constructor属性只是函数在声明时的默认属性，如果prototype被修改了，那么constructor就没了，不会自动帮我们关联到新的绑定的对象上。此时一般我们需要手动修复这个问题。
 - __proto__这个属性不在标准里面(es6之前)，不是所有的JS引擎都支持它，它作为Object.prototype上的一个存取器属性主要用来获取或者设置某个对象的[[prototype]]（可以直接使用__proto__赋值）
   - 如果要设置可以使用Object.setPrototypeOf(操作的目标，要继承的目标)
   - 在就是上面说的prototype可以直接修改的``构造函数.prototype=source``
