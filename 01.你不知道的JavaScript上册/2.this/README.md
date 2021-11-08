@@ -288,7 +288,7 @@ var o3={name:3};
 //绑定默认的对象o
 var fo = f.softBind(o1);
 fo();//name1
-//隐身绑定
+//隐式绑定
 o2.f=f.softBind(o1)
 o2.f()//name2
 //显式绑定
