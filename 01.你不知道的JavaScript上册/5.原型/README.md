@@ -56,14 +56,14 @@ JavaScript和面向类的语言不同，它并没有类来作为对象的抽象�
 function Foo(){}
 Foo.prototype
 ```
-**所有函数默认都会拥有一个名为``prototype``的共有且不可枚举的属性，它会指向一个对象。**  
+***所有函数默认都会拥有一个名为``prototype``的共有且不可枚举的属性，它会指向一个对象。***  
 这个对象通常被称为Foo的原型，因为我们通过名为Foo.prototype的属性引用来访问它。  
 ```
 function Foo(){}
 var a = new Foo()
 Object.getownPrototypeOf(a)===Foo.prototype//true
 ```
-通过new Foo()创建的每个对象将被[[Prototype]]链接到这个Foo.prototype对象。  
+***通过new Foo()创建的每个对象将被[[Prototype]]链接到这个Foo.prototype对象。***  
 在JavaScript中，并没有类似的类的复制机制。只能创建多个对象，它们的[[Prototype]]是关联的同一个对象。但是在默认情况下并不会进行复制，因此这些对象之间并不会完全失去联系，是相互关联的。  
 上面的例子最后我们得到了两个对象，它们之间相互关联。并没有初始化一个类，只是让两个对象互相关联。  
 new Foo()这个操作实际上并没有直接创建关联，只是间接的完成了我们的目标：一个关联到其他对象的新对象。
