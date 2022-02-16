@@ -10,7 +10,7 @@ var obj = {
 ```
 构造形式：
 ```
-var obj = new Object
+var obj = new Object()
 obj.key=val
 ```
 
