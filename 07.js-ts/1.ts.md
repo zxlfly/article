@@ -231,7 +231,7 @@ console.log(res);
   - 私有----在当前类里面可以访问
 ### 静态成员 static
 静态成员和类的实例没有关系，静态成员、静态方法都绑定在类型本身上。  
-金泰成员也会继承。
+静态成员也会继承。
 ### 抽象类不能实例化，只能继承
 ### 索引器
 ```
@@ -334,7 +334,7 @@ let cz:typeof sz
 // cz: string
 ```
 ### Partial Type
-例如一个函数参数某个参数必须满足一个接口，这个接口定义了两个必传参数，但是在调用的时候只想传其中一个参数，这是可以使用``Partial<Type>``.相当于所有参数可选。  
+例如一个函数参数必须满足一个接口，这个接口定义了两个必传参数，但是在调用的时候只想传其中一个参数，这是可以使用``Partial<Type>``.相当于所有参数可选。  
 实现：
 ```
 type Partial<T> = {
@@ -440,8 +440,7 @@ type Extract<T,U> = T extends U?T:never
 ```
 ### NonNullable
 ```
-type T0 = NonNullable<string|number|undefined|null
-|never>
+type T0 = NonNullable<string|number|undefined|null|never>
 ```
 实现：
 ```
