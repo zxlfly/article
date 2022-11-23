@@ -12,8 +12,9 @@ var obj = {
   })()
 }
 var fn1 = obj.fn1;
-console.log(a); 
-fn1(); 
+console.log(a);
+fn1();
 obj.fn1();
 console.log(a);
 console.log(obj.a);
+// test gpg
