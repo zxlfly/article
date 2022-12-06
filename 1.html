@@ -30,30 +30,31 @@
     // console.log(app.childNodes[0].textContent) // null
     // console.log(app.textContent) // null
     const arr = ['41', '54', '02', '00', '01', '01', '02', '00', '01', '05', '06', '00'];
-    function getInd(inputArr){
+    function getInd(inputArr) {
       let ind = null
-      if(inputArr.length>arr.length){
+      if (inputArr.length > arr.length) {
         return undefined
       }
-      if(inputArr.length==arr.length){
+      if (inputArr.length == arr.length) {
         return inputArr == arr ? 0 : undefined
       }
-      for(let i =0;i<arr.length;i++) {
-        if(i + inputArr.length>arr.length){
+      for (let i = 0; i < arr.length; i++) {
+        if (i + inputArr.length > arr.length) {
           return undefined
-        }else{
+        } else {
           let res = 0
-          inputArr.forEach((item,index) => {
-            item == arr[i + index]?res++:null
+          inputArr.forEach((item, index) => {
+            item == arr[i + index] ? res++ : null
           });
-          if(res==inputArr.length){
+          if (res == inputArr.length) {
             return ind = i
           }
         }
-      } 
+      }
       return ind
     }
-    console.log(getInd( ['02', '00']));
+    console.log(getInd(['02', '00']));
+
   </script>
 </body>
 
