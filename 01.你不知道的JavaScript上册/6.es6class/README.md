@@ -11,179 +11,98 @@ es6中class除了语法更好看之外
 - 类的声明不会提升
 - 默认处于严格模式
 
-## super
-super和this不一样不是动态绑定的，他会在声明的时候“静态”绑定。
-```
-class P{
-    foo(){console.log("p foo")}
-}
-class C extends P{
-    foo(){
-        super.foo();
-    }
-} 
-var c1 =new C()
-c1.foo()//p foo
+**类的属性和方法，除非显式定义在其本身（即定义在this对象上,实例化对象上就会有这些属性和方法），否则都是定义在原型上（即定义在class上）**
+现在新的写法可以直接将实例属性写在class内部，不使用this也可以
+## 公有 可以被修改
 
-var D ={
-    foo:function(){console.log('D foo')}
-}
-var E ={
-    foo:C.prototype.foo
-}
-//把E委托给D
-Object.setPrototypeOf(E,D)
-E.foo()//p foo
+- 公有实例方法 
+   - 可以在类的实例中调用，this指向实例本身，可以使用super访问超类
+- 公有实例字段 
+   - 存在于每个类的实例中
+## static 可以被修改
+**父类的静态属性和静态方法，会被子类继承。直接通过类来调用。**
+
+- 静态方法 
+   - 该方法不会被实例继承，而是直接通过类来调用
+   - 如果静态方法包含this关键字，这个this指的是类，而不是实例
+- 静态属性 
+   - 不会被实例继承，而是直接通过类来调用
+## 私有
+**私有方法和私有属性，是只能在类的内部访问的方法和属性，外部不能访问。**
+**实例对象也不能直接访问，可以通过其他方法间接访问。**
+
+- 私有方法 
+   - 通过`#name(){}`句型声明	
+   - 静态的私有方法，只能在类里调用
+   - 可以通过公有方法访问
+- 私有字段 
+   - 通过`#name`句型声明
+   - 不能在class外访问，只能在class内部访问，静态私有也一样
+   - 实例对象也不能直接访问
+      - 可以通过get方法间接访问
+## 继承
+
+- 在内部使用call方法 
+   - 可以继承构造函数的方法和属性，但是不能继承原型链上面的
+- 直接将prototype指向需要继承的类实例 
+   - 可以解决上面你的问题，但是不能给父类传参
+- 结合上面两种方法就可以解决这些问题 
+   -  
 ```
-如果认为super会动态绑定，那super会自动识别出E委托了D，所以应该调用D.foo。  
-但是不是这样的。出于性能考虑，super在[[HomeObject]].[[prototype]]上，[[HomeObject]]会在创建时静态绑定。  
-本例中，super会调用P，因为方法的[[HomeObject]]任然是C，C.[[prototype]]是P。  
-如果使用了bind函数来绑定，那么这个函数不会像普通的函数那样被es6的extends拓展到子类中。
-## 公共方法
-### 静态方法
-关键字static将为一个类定义一个静态方法。静态方法不会在实例中被调用，而只会被类本身调用。
+function Person(name,age){
+    this.name=name
+    this.age=age
+    this.run=function(){
+        alert(this.name+'睡觉')
+    }
+}
+Person.prototype.sex="men"
+Person.prototype.work=function(){
+    alert(this.name+'work')
+}
+var p=new Person('李四',20);
+p.run();
+
+function child3(name,age){
+    Person.call(this,name,age)
+}
+child3.prototype=new Person()
+var w3 = new child3('lao6',22)
+w3.run()
+w3.work()
 ```
-class ClassWithStaticMethod {
-  static staticProperty = 'someValue';
-  static staticMethod() {
-    return 'static method has been called.';
-  }
+ 
+
+- extends关键字 
+   - class可以直接通过extends关键字实现继承
+   - es6规定子类必须在constructor中调用super() 
+      - 因为子类this对象需要通过父类构造函数塑造，得到父类实例同样的属性和方法，然后再加工添加子类自己的属性和方法
+   - **父类除了私有的属性和方法，其他的都会被子类继承**
+
+#### super
+ES5 的继承机制，是先创造一个独立的子类的实例对象，然后再将父类的方法添加到这个对象上面，即“实例在前，继承在后”。
+ES6 的继承机制，则是先将父类的属性和方法，加到一个空的对象上面，然后再将该对象作为子类的实例，即“继承在前，实例在后”。这就是为什么 ES6 的继承必须先调用super()方法，因为这一步会生成一个继承父类的this对象，没有这一步就无法继承父类。
+super和this不一样，不是动态绑定的，他会在静态声明的时候绑定
+super作为函数调用时，代表父类的构造函数。
+super作为对象时，在普通方法中，指向父类的原型对象；在静态方法中，指向父类。
+
+## 静态块
+允许在类的内部设置一个代码块，在类生成时运行且只运行一次，主要作用是对静态属性进行初始化。以后，新建类的实例时，这个块就不运行了。
+静态块内部可以使用类名或this，指代当前类，不能有return语句。
+除了静态属性的初始化，静态块还有一个作用，就是将私有属性与类的外部代码分享。
+```markdown
+let getX;
+
+export class C {
+  #x = 1;
   static {
-    console.log('Class static initialization block called');
+    getX = obj => obj.#x;
   }
 }
 
-console.log(ClassWithStaticMethod.staticProperty);
-// output: "someValue"
-console.log(ClassWithStaticMethod.staticMethod());
-// output: "static method has been called."
-```
-### 公共实例方法
-公共实例方法是可以在类的实例中使用的。在实例的方法中，this指向的是实例本身，可以使用super访问到超类的原型，由此可以调用超类的方法。
-```
-class ClassWithPublicInstanceMethod {
-  publicMethod() {
-    return 'hello world';
-  }
-}
-const instance = new ClassWithPublicInstanceMethod();
-console.log(instance.publicMethod());
-// "hello worl​d"
+console.log(getX(new C())); // 1
 ```
 
-## 公有字段
-静态公有字段和实例公有字段都是可编辑的，可遍历的，可配置的。它们本身不同于私有对应值（private counterparts）的是，它们参与原型的继承。
-### 静态公有字段
-使用关键字 static 声明，类的构造函数访问静态公有字段。。不会在子类里重复初始化，但我们可以通过原型链访问它们。
-```
-class ClassWithStaticField {
-  static staticField = 'static field';
-}
-console.log(ClassWithStaticField.staticField);
-// "static field"​
-```
-### 公有实例字段
-公有实例字段存在于类的每一个实例中。通过声明一个公有字段，我们可以确保该字段一直存在，而类的定义则会更加像是自我描述。
-```
-class ClassWithInstanceField {
-  // 没有设定初始化程序的字段将默认被初始化为undefined。
-  instanceField = 'instance field';
-}
-const instance = new ClassWithInstanceField();
-console.log(instance.instanceField);
-// "instance field"
-```
-## 私有字段
-### 静态私有字段
-静态私有字段可以在类声明本身内部的构造函数上被访问到。静态变量只能被静态方法访问的限制依然存在。
-```
-class ClassWithPrivateStaticField {
-  static #PRIVATE_STATIC_FIELD;
+## new.target 属性
+可以用来确定构造函数是怎么调用的。
 
-  static publicStaticMethod() {
-    ClassWithPrivateStaticField.#PRIVATE_STATIC_FIELD = 42;
-    return ClassWithPrivateStaticField.#PRIVATE_STATIC_FIELD;
-  }
-}
-
-console.log(ClassWithPrivateStaticField.publicStaticMethod() === 42)
-```
-### 私有实例字段
-私有实例字段是通过# names句型（读作“哈希名称”）声明的，即为识别符加一个前缀“#”。“#”是名称的一部分，也用于访问和声明。
-
-封装是语言强制实施的。引用不在作用域内的 # names 是语法错误。
-
-```
-class ClassWithPrivateField {
-  #privateField;
-
-  constructor() {
-    this.#privateField = 42;
-  }
-  getInfo(){
-      return this.#privateField
-  }
-}
-const instance = new ClassWithPrivateField();
-instance.getInfo() === 42 // true
-instance.#privateField === 42; // 不能在class外访问，只能通过class里进行访问
-```
-## 私有方法
-### 静态私有方法
-和静态公共方法一样，静态私有方法也是在类里面而非实例中调用的。和静态私有字段一样，它们也只能在类的声明中访问。
-
-你可以使用生成器（generator）、异步和异步生成器方法。
-
-静态私有方法可以是生成器、异步或者异步生成器函数。
-```
-class ClassWithPrivateStaticMethod {
-    static #privateStaticMethod() {
-        return 42;
-    }
-
-    static publicStaticMethod() {
-        return ClassWithPrivateStaticMethod.#privateStaticMethod();
-    }
-}
-
-console.log(ClassWithPrivateStaticMethod.publicStaticMethod() === 42);
-```
-### 私有实例方法
-私有实例方法在类的实例中可用，它的访问方式的限制和私有实例字段相同。
-```
-class ClassWithPrivateMethod {
-  #privateMethod() {
-    return 'hello world';
-  }
-
-  getPrivateMessage() {
-      return this.#privateMethod();
-  }
-}
-
-const instance = new ClassWithPrivateMethod();
-console.log(instance.getPrivateMessage());
-// 预期输出值: "hello worl​d"
-```
-私有实例方法可以是生成器、异步或者异步生成器函数。私有getter和setter也是可能的
-```
-class ClassWithPrivateAccessor {
-  #message;
-
-  get #decoratedMessage() {
-    return `${this.#message}`;
-  }
-  set #decoratedMessage(msg) {
-    this.#message = msg;
-  }
-
-  constructor() {
-    this.#decoratedMessage = 'hello world';
-    console.log(this.#decoratedMessage);
-  }
-}
-
-new ClassWithPrivateAccessor();
-// 预期输出值: "hello worl​d"
-
-```
