@@ -126,5 +126,18 @@ console.log(getX(new C())); // 1
 ```
 
 ## new.target 属性
-可以用来确定构造函数是怎么调用的。
+如果构造函数不是通过new命令或Reflect.construct()调用的，new.target会返回undefined，因此这个属性可以用来确定构造函数是怎么调用的。
+```
+class Person {
+    constructor(){
+        if (new.target === Person) {
+    this.name = name;
+  } else {
+    throw new Error('必须使用 new 命令生成实例');
+  }
+    }
+}
+var person = new Person('张三'); // 正确
+var notAPerson = Person.call(person, '张三');  // 报错
+```
 
